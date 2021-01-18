@@ -11,6 +11,7 @@ export class MainScene extends Phaser.Scene {
         this.playerslist = []; 
     }
 
+
     preload() {
         this.load.image('0', 'assets/0.png');
         this.load.image('1', 'assets/1.png');
@@ -38,7 +39,6 @@ export class MainScene extends Phaser.Scene {
 
         // this checks what a person is hovering over and then checks the validity of their guess
         this.input.keyboard.on('keyup', keyevent => { 
-            console.log(this.chosenplayer);
             if (this.chosenplayer >= 0) {          // chosenplayer is -1 unless hovering 
                 
                 let player = this.playerslist[this.chosenplayer];
@@ -55,18 +55,17 @@ export class Player {
 
     playerletters: string[]; // list of characters of a word
     underscorelist: string[]; // list of underscores as they are being guessed
-    wordsprite: Phaser.GameObjects.Text; // one player's word sprite
     wrongguesses: Set<string>; // SET of wrong guesses
-    hangmanpicture: Phaser.GameObjects.Image; // hangman picture, 1-6.png
 
-
+    wordsprite: Phaser.GameObjects.Text; // one player's word sprite
     wronganswerlistsprite: Phaser.GameObjects.Text; // wrong answer list sprite
+    hangmanpicture: Phaser.GameObjects.Image; // hangman picture, 0-5.png
 
     constructor(scene: MainScene, xpos: integer, ypos: integer, playerindex: integer, playerletters: string[]) {
 
         let underscorelist = [];
         for (let c in playerletters) {
-            underscorelist.push("-");     // this doesnt have anything to do with the drawing
+            underscorelist.push("-");     // this doesnt have anything to do with the drawing, it puts the right amount of dashes into the list
         }
 
         this.underscorelist = underscorelist;
@@ -83,7 +82,6 @@ export class Player {
             scene.chosenplayer = -1;});
 
 
-
         this.wrongguesses = new Set();
         this.wronganswerlistsprite = scene.add.text(xpos + 80, ypos + 40, "" , { fontSize: "24px", color: "orange" });
 
@@ -95,33 +93,30 @@ export class Player {
 
         letter = letter.toUpperCase();
 
-        if ( ! isLetter(letter)){ // ! means not
-            return
+        if (! isLetter(letter)){ // ! means not
+            return; // rejects all non-letter guesses
         }
 
         let hitcounter = 0;
         for (let position in this.underscorelist) {
-            if (letter == this.playerletters[position]){
+            if (letter == this.playerletters[position]){ // if correct
                 this.underscorelist[position] = letter;
                 hitcounter += 1;
-                return true;
+                // return true;
             }
         }
-        if (hitcounter == 0) {
+
+        if (hitcounter == 0) { // no matching letters
             this.wrongguesses.add(letter);
             this.wronganswerlistsprite.setText(Array.from(this.wrongguesses).join('')); // join for sets to display
 
-            return false;
+            // return false;
 
-        
-            
-        
-        
-            this.hangmanpicture.setTexture("" + this.wrongguesses.size); 
+            // this.hangmanpicture.setTexture("" + this.wrongguesses.size); // sets the accompanying one.. how do I do person 1 each time?
+
+
+
         }
-
-
-        console.log(this.wrongguesses);
 
         this.wordsprite.setText(this.underscorelist.join(" "));
     
