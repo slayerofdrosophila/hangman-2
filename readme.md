@@ -17,6 +17,6 @@ assign wrong guess "damage" to player 0
 
 online multiplayer functionality
 
-main menu area
+main menu scene
 
 anything else
