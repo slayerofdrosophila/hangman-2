@@ -13,5 +13,5 @@ phaser makes things called "scenes" which are put on "canvases?" and like put in
 
 todo:
 online multiplayer functionality, 
-make incorrect guesses work right/n
+make incorrect guesses work right, 
 anything else
