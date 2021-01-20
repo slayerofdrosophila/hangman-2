@@ -7,6 +7,7 @@ rooms?
 usernames      
 word filters / categories + character limits (customizable)         
 accounts (this is for u sql pros out there!!!)
+making the thing playable on smaller screen when there are more than 4 people
 
 
 honestly i shouldve wrote the server stuff in python instead... big sads
