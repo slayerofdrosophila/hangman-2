@@ -3,11 +3,13 @@ I barely know how the code works myself but if you ask I will try my best to wal
 (and its not a "haha its magic" but because my dad wrote a good amount of it and i was basically transcribing it xdxd)
 
 todo:      
+making the thing playable on smaller screen when there are more than 4 people                   
 rooms?     
 usernames      
 word filters / categories + character limits (customizable)         
-accounts (this is for u sql pros out there!!!)
-making the thing playable on smaller screen when there are more than 4 people
+accounts (sql??)            
+actual art              
+
 
 
 honestly i shouldve wrote the server stuff in python instead... big sads
