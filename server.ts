@@ -1,5 +1,7 @@
 import { Socket } from "socket.io";
 
+'use strict';
+
 const express = require('express');
 const socketIO = require('socket.io');
 
@@ -44,8 +46,3 @@ io.on('connection', function (socket:Socket) {
 });
 
 
-
-
-http.listen(3000, function () {
-    console.log('Server started!');
-});
