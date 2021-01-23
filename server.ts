@@ -1,21 +1,15 @@
 import { Socket } from "socket.io";
 
-'use strict';
-
 const express = require('express');
-const socketIO = require('socket.io');
-
-const PORT = process.env.PORT || 3000;
-const INDEX = '/index.html'
-
-
-const server = express()
-  .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-  .listen(PORT, () => console.log(`Listening on ${PORT}`));
-
-const io = socketIO(server);
-
-
+const server = express();
+const http = require('http').createServer(server);
+const io = require('socket.io')(http, {
+    cors: {
+    //   origin: "http://laptop-1htqkf80:8080",
+      origin: "  https://hangman-royale.azurewebsites.net",
+      methods: ["GET", "POST"]
+    }
+  });
 
 let players = new Map<string,Socket>();
 
@@ -24,8 +18,8 @@ io.on('connection', function (socket:Socket) {
 
     players.set(socket.id,socket); // set adds / replaces to a map
 
-
     socket.on ("playerword",(word) => { // receives word from client
+
         for (let i in word){
             word[i] = word[i].toUpperCase();
         }
@@ -37,6 +31,18 @@ io.on('connection', function (socket:Socket) {
         console.log(word); 
     });
 
+    // socket.on('dealCards', function () {
+    //     io.emit('dealCards');
+    //     console.log('dealing cards!');
+    // });
+
+    // socket.on('cardPlayed', function (gameObject, isPlayerA) {
+    //     io.emit('cardPlayed', gameObject, isPlayerA);
+    //     console.log('played card!');
+    // });
+
+
+ // bla
 
 
     socket.on('disconnect', function () {
@@ -45,4 +51,13 @@ io.on('connection', function (socket:Socket) {
     });
 });
 
+http.listen(3000, function () {
+    console.log('Server started!');
+});
 
+
+server.use(express.static('client'))
+
+http.listen(80, function () {
+    console.log('Server started!');
+});
