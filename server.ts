@@ -55,5 +55,4 @@ http.listen(3000, function () {
     console.log('Server started!');
 });
 
-
-server.use(express.static('client'))
+server.use('/client', express.static('client'))
