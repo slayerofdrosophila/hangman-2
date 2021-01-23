@@ -6,7 +6,7 @@ const http = require('http').createServer(server);
 const io = require('socket.io')(http, {
     cors: {
     //   origin: "http://laptop-1htqkf80:8080",
-      origin: "  https://hangman-royale.azurewebsites.net",
+      origin: "  https://hangman-royale.azurewebsites.net:8080",
       methods: ["GET", "POST"]
     }
   });
@@ -57,7 +57,3 @@ http.listen(3000, function () {
 
 
 server.use(express.static('client'))
-
-http.listen(80, function () {
-    console.log('Server started!');
-});
