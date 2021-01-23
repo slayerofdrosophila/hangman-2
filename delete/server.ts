@@ -4,7 +4,8 @@ const server = require('express')();
 const http = require('http').createServer(server);
 const io = require('socket.io')(http, {
     cors: {
-      origin: "http://laptop-1htqkf80:8080",
+    //   origin: "http://laptop-1htqkf80:8080",
+      origin: "  https://hangman-royale.azurewebsites.net:8080",
       methods: ["GET", "POST"]
     }
   });
