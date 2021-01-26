@@ -2,11 +2,18 @@ import { Socket } from "socket.io";
 
 const express = require('express');
 const server = express();
+server.use('/', express.static('dist'))
+
 const http = require('http').createServer(server);
+
+http.listen(3000, function () {
+    console.log('Server started!');
+});
+
 const io = require('socket.io')(http, {
     cors: {
-    //   origin: "http://laptop-1htqkf80:8080",
-      origin: "  https://hangman-royale.azurewebsites.net:8080",
+      origin: "http://DESKTOP-5G5BB13:3000".toLowerCase(),
+    //   origin: "  https://hangman-royale.azurewebsites.net:8080",
       methods: ["GET", "POST"]
     }
   });
@@ -50,9 +57,3 @@ io.on('connection', function (socket:Socket) {
         players.delete (socket.id);
     });
 });
-
-http.listen(3000, function () {
-    console.log('Server started!');
-});
-
-server.use('/client', express.static('client'))

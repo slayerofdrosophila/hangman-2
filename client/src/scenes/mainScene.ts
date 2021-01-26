@@ -43,7 +43,7 @@ export class MainScene extends Phaser.Scene {
 
         
         // web magic
-        let socket = io('LAPTOP-1HTQKF80:3000');
+        let socket = io('DESKTOP-5G5BB13:3000'.toLowerCase());
         let self = this;
 
         socket.on('connect', function () {
