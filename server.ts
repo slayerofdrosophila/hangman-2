@@ -12,8 +12,8 @@ http.listen(3000, function () {
 
 const io = require('socket.io')(http, {
     cors: {
-      origin: "http://DESKTOP-5G5BB13:3000".toLowerCase(),
-    //   origin: "  https://hangman-royale.azurewebsites.net:8080",
+   //   origin: "http://DESKTOP-5G5BB13:3000".toLowerCase(),
+       origin: "  https://hangman-royale.azurewebsites.net:8080",
       methods: ["GET", "POST"]
     }
   });
