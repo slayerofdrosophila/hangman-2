@@ -44,7 +44,7 @@ export class MainScene extends Phaser.Scene {
         
         // web magic
         // let socket = io('DESKTOP-5G5BB13:3000'.toLowerCase());
-        let socket = io( "https://hangman-royale.azurewebsites.net:8080"_);
+        let socket = io( "https://hangman-royale.azurewebsites.net:8080");
         let self = this;
 
         socket.on('connect', function () {
