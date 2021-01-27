@@ -6,17 +6,12 @@ server.use('/', express.static('dist'))
 
 const http = require('http').createServer(server);
 
-http.listen(3000, function () {
+var port = (process.env.PORT || '8080');
+http.listen(port, function () {
     console.log('Server started!');
 });
 
-const io = require('socket.io')(http, {
-    cors: {
-   //   origin: "http://DESKTOP-5G5BB13:3000".toLowerCase(),
-       origin: "  https://hangman-royale.azurewebsites.net:8080",
-      methods: ["GET", "POST"]
-    }
-  });
+const io = require('socket.io')(http);
 
 let players = new Map<string,Socket>();
 
