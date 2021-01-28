@@ -32,23 +32,37 @@ http.listen(port, function () {
 
 const io = require('socket.io')(http);
 
-let players = new Map<string,Socket>();
 
-io.on('connection', function (socket:Socket) {
-    console.log('A user connected: ' + socket.id);
 
-    players.set(socket.id,socket); // set adds / replaces to a map
+let players:{ [socketid: string]: [Socket,string[]] } = {}; // string = socket id, Socket = actual connection, string = word 
 
-    socket.on ("playerword",(word) => { // receives word from client
+io.on('connection', function (connectingsocket:Socket) {
+    console.log('A user connected: ' + connectingsocket.id);
+
+    players[connectingsocket.id] = [connectingsocket,[]]; // set adds / replaces to a map
+
+    connectingsocket.on ("playerword",(word) => { // receives word (list) from client 
 
         for (let i in word){
             word[i] = word[i].toUpperCase();
         }
 
-        players.forEach((sock, player) => {
-            sock.emit('newplayerword', word, socket.id); // emites the things
-            console.log('newplayerword'+word+socket.id); 
-        });
+        players[connectingsocket.id] = [connectingsocket,word]; // thois isnt overwriting the sockerid, socketid is the index and it overwewrieteds the valyue at that index 
+
+
+        for (let socketid in players) {
+            let connection = players[socketid][0];
+            connection.emit('newplayerword', word, connectingsocket.id); // emites the new word (and socket id) to the current client connection imn the loop
+            console.log('newplayerword'+word+connectingsocket.id); 
+
+            if (socketid !== connectingsocket.id){
+                connectingsocket.emit('newplayerword',players[socketid][1],socketid); // this sends the new connector the woirdb the lloop si currently on
+            }
+        };
+
+        
+
+
         console.log(word); 
     });
 
@@ -66,8 +80,8 @@ io.on('connection', function (socket:Socket) {
  // bla
 
 
-    socket.on('disconnect', function () {
-        console.log('A user disconnected: ' + socket.id);
-        players.delete (socket.id);
+    connectingsocket.on('disconnect', function () {
+        console.log('A user disconnected: ' + connectingsocket.id);
+        delete players[connectingsocket.id];
     });
 });
