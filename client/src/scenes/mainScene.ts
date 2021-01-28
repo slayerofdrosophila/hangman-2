@@ -44,7 +44,7 @@ export class MainScene extends Phaser.Scene {
         
         // web magic
          let socket = io(window.location.host);
-        //let socket = io( "https://hangman-royale.azurewebsites.net:8080");
+
         let self = this;
 
         socket.on('connect', function () {
