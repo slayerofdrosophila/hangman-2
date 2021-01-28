@@ -3,6 +3,7 @@ I barely know how the code works myself but if you ask I will try my best to wal
 (and its not a "haha its magic" but because my dad wrote a good amount of it and i was basically transcribing it xdxd)
 
 todo:      
+make the acctual game: (turns, damage)                                      
 making the thing playable on smaller screen when there are more than 4 people                   
 rooms?     
 usernames      

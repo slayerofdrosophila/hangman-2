@@ -134,7 +134,7 @@ export class Player {
     // when guessletter returns false
     takedamage(){
         this.damage += 1
-        this.hangmanpicture.setTexture("" + this.damage);
+        this.hangmanpicture.setTexture("" + this.damage); // SOMEHOW only adds to player 0??
     }
 
     
