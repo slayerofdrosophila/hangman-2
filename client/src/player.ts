@@ -17,14 +17,18 @@ export class Player {
     wordsprite: Phaser.GameObjects.Text; // one player's word sprite
     wronganswerlistsprite: Phaser.GameObjects.Text; // wrong answer list sprite
     hangmanpicture: Phaser.GameObjects.Image; // hangman picture, 0-5.png
-
     selectedstate: boolean = false; // if a sprite is selected
 
     constructor(scene: MainScene, xpos: integer, ypos: integer, playerindex: string, playerletters: string[], isme:boolean) { // when is this called?
 
         let underscorelist = [];
-        for (let c in playerletters) {
-            underscorelist.push("-");     // this doesnt have anything to do with the drawing, it puts the right amount of dashes into the list
+        for (let c of playerletters) {
+            if (c === " "){
+                underscorelist.push(" ");
+            }
+            else{
+                underscorelist.push("-");     // this doesnt have anything to do with the drawing, it puts the right amount of dashes into the list
+            }
         }
         
         this.underscorelist = underscorelist;
