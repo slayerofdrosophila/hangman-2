@@ -18,6 +18,9 @@ export class MainScene extends Phaser.Scene {
         this.load.image('4', 'assets/4.png');
         this.load.image('5', 'assets/5.png');
         this.load.image('6', 'assets/6.png');
+
+        this.load.image("bluestar", "assets/bluestar.png");
+        this.load.image("goldstar", "assets/goldstar.png");
     }
     
     
@@ -35,7 +38,7 @@ export class MainScene extends Phaser.Scene {
     playersidsandplayersmap: Map<string, Player>;
     
     chosenplayer: string; // int of which player is being moused over
-    myplayer: Player = null;
+
 
     create() { // this is called when the scene is to be displayed
         // creates the text objects on the scene
@@ -51,17 +54,35 @@ export class MainScene extends Phaser.Scene {
             console.log('Connected!');
 
             socket.on ("newplayerword",(word, newplayerid) => {
-                console.log("newplayerword:"+newplayerid+word);
+                // console.log("newplayerword:"+newplayerid+word);
                 if (newplayerid in self.playersidsandplayersmap) {
+                    console.log("TRUE THO (it happened. turn off your computer and run)")
                     return;
                 }
-                let player = new Player(self, 50, ypos, newplayerid, word);    // this calls constructor() in Player class in player.ts
-                self.playersidsandplayersmap[newplayerid] = player; // puts each sprite word into a list
-                if (self.myplayer === null) {
-                    self.myplayer = player;
+
+                let isme = false
+                if (newplayerid === socket.id){
+                    console.log("its a me")
+                    isme = true
                 }
+                console.log(isme)
+                let player = new Player(self, 50, ypos, newplayerid, word, isme);    // this calls constructor() in Player class in player.ts
+                self.playersidsandplayersmap[newplayerid] = player; // puts each sprite word into a map
+
                 ypos += 100;
             });
+
+            socket.on("wrongguess", function(sourceid: string, targetid:string, letter:string){
+                self.playersidsandplayersmap[sourceid].takedamage();
+                self.playersidsandplayersmap[targetid].wrongguess(letter) // the thingy refers to the Player sprite thingy
+            })
+
+            socket.on("rightguess", function(sourceid: string, targetid:string, letter:string){
+                self.playersidsandplayersmap[targetid].rightguess(letter)
+                console.log("righte guess 2!!! " + sourceid, targetid, letter)
+            })
+
+            
     
             socket.emit("playerword", self.word);
             
@@ -70,11 +91,13 @@ export class MainScene extends Phaser.Scene {
         // this checks what a person is hovering over and then checks the validity of their guess
         this.input.keyboard.on('keyup', keyevent => { 
             if (this.chosenplayer !== null) {          // chosenplayer is -1 unless hovering 
-                
-                let player = this.playersidsandplayersmap[this.chosenplayer];
-                if (! player.guessletter(keyevent.key)){
-                    this.myplayer.takedamage(); // takedamage() somehow knows its player 0 and does the right thing, somehow
-                }
+
+                socket.emit("guess", keyevent.key, this.chosenplayer);
+
+                // if (! player.guessletter(keyevent.key)){
+                //     this.myplayer.takedamage(); // takedamage() somehow knows its player 0 and does the right thing, somehow
+                    
+                // }
 
             }
         });

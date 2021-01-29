@@ -1,4 +1,5 @@
 import { Socket } from "socket.io";
+import { isLetter } from "./client/src/player";
 
 const express = require('express');
 const server = express();
@@ -53,23 +54,46 @@ io.on('connection', function (connectingsocket:Socket) {
         for (let socketid in players) {
             let connection = players[socketid][0];
             connection.emit('newplayerword', word, connectingsocket.id); // emites the new word (and socket id) to the current client connection imn the loop
-            console.log('newplayerword'+word+connectingsocket.id); 
+            console.log('newplayerword'+word+connectingsocket.id+socketid); 
 
             if (socketid !== connectingsocket.id){
-                connectingsocket.emit('newplayerword',players[socketid][1],socketid); // this sends the new connector the woirdb the lloop si currently on
+                connectingsocket.emit('newplayerword',players[socketid][1],socketid); // this sends the new connector the woirdb the lloop si currently on (not its own word)
+                console.log("newplayerword-SPECIAL-"+word+connectingsocket.id+socketid);
             }
         };
-
-        
-
 
         console.log(word); 
     });
 
-    // socket.on('dealCards', function () {
-    //     io.emit('dealCards');
-    //     console.log('dealing cards!');
-    // });
+    connectingsocket.on('guess', function (letter: string, targetid: string) {
+        
+        letter = letter.toUpperCase();
+        if (! isLetter(letter)){ 
+            return; // rejects all non-letter guesses
+        }
+
+        let word = players[targetid][1] // word is a list
+
+        let hitcounter = 0;
+        for (let position in word) {
+            if (letter == word[position]){ // if correct
+                hitcounter += 1;
+            }
+        }
+
+        if (hitcounter == 0) { // no matching letters
+            connectingsocket.broadcast.emit("wrongguess", connectingsocket.id, targetid, letter); // sends 2 everyone but the sender
+            connectingsocket.emit("wrongguess", connectingsocket.id, targetid, letter); // sends 2 the sender
+            console.log("wrong guess" + connectingsocket.id)
+        }
+        else{
+            for (let socketid in players) {
+                let connection = players[socketid][0];
+                connection.emit('rightguess', connectingsocket.id, targetid, letter); 
+                console.log("rite guess" + targetid)
+        }
+    }
+    });
 
     // socket.on('cardPlayed', function (gameObject, isPlayerA) {
     //     io.emit('cardPlayed', gameObject, isPlayerA);
