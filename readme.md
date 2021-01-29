@@ -24,10 +24,10 @@ how to run locally:
 * run npm install
 * run parcel in one terminal (.\node_modules\.bin\parcel .\client\src\index.html)
 * run the server in another window (.\node_modules\.bin\nodemon --watch server.ts --exec npm start)
-* parcel will refresh the client when u make a change to its code (repackaging it in dist)
-* nodemon will refresh the server when u make a change to its code (server.ts)                      
+* parcel will refresh the client when u make a change to its code (repackaging it in dist,)       
+* nodemon will refresh the server when u make a change to its code                     
 
 how to get server working (on azure)            
 * use app service
-* set WEBSITES_PORT to 3000 (or set the code to use 8080)               
-* set WEBSITES_CONTAINER_STAT_TIME_LIMIT to 1800       
+* set WEBSITES_PORT to 3000 (or set the code to use 8080 instead)               
+* set WEBSITES_CONTAINER_START_TIME_LIMIT to 1800 (this is the max value)
