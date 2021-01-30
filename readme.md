@@ -11,7 +11,8 @@ your own word has a star next to it to show you it is yours
 ---
 
 todo:      
-make the acctual game: (turns)                                      
+make the acctual game: (turns)                           
+cant guess same letter twice               
 making the thing playable on smaller screen when there are more than 4 people                   
 rooms?     
 usernames      
@@ -26,6 +27,7 @@ how to run locally:
 * run the server in another window (.\node_modules\.bin\nodemon --watch server.ts --exec npm start)
 * parcel will refresh the client when u make a change to its code (repackaging it in dist,)       
 * nodemon will refresh the server when u make a change to its code                     
+* to push to server, run parcel with .\node_modules\.bin\parcel build .\client\src\index.html instead for compression        
 
 how to get server working (on azure)            
 * use app service

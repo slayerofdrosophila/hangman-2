@@ -18,6 +18,8 @@ export class playerJoinScene extends Phaser.Scene {
         this.add.text(screenCenterX, screenCenterY + 30, "Press ESC to clear your word", {color: "black"}).setOrigin(0.5);
 
         // this is for word input
+
+        
         this.input.keyboard.on('keyup', keyevent => {
 
             let letter = keyevent.key

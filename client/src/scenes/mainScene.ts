@@ -46,14 +46,14 @@ export class MainScene extends Phaser.Scene {
 
         
         // web magic
-         let socket = io(window.location.host);
+        let socket = io(window.location.host);
 
         let self = this;
 
         socket.on('connect', function () {
             console.log('Connected!');
 
-            socket.on ("newplayerword",(word, newplayerid) => {
+            socket.on ("newplayerword",(word, newplayerid, playernumber) => {
                 // console.log("newplayerword:"+newplayerid+word);
                 if (newplayerid in self.playersidsandplayersmap) {
                     console.log("TRUE THO (it happened. turn off your computer and run)")
@@ -63,7 +63,9 @@ export class MainScene extends Phaser.Scene {
                 let isme = false
                 if (newplayerid === socket.id){
                     console.log("its a me")
-                    isme = true
+                    isme = true;
+                    this.mynumber = playernumber;
+                    console.log(this.mynumber);
                 }
                 console.log(isme)
                 let player = new Player(self, 50, ypos, newplayerid, word, isme);    // this calls constructor() in Player class in player.ts
@@ -72,17 +74,21 @@ export class MainScene extends Phaser.Scene {
                 ypos += 100;
             });
 
-            socket.on("wrongguess", function(sourceid: string, targetid:string, letter:string){
+            socket.on("wrong", function(sourceid: string, targetid:string, letter:string){
                 self.playersidsandplayersmap[sourceid].takedamage();
-                self.playersidsandplayersmap[targetid].wrongguess(letter) // the thingy refers to the Player sprite thingy
+                self.playersidsandplayersmap[targetid].wrongguess(letter); // the thingy refers to the Player sprite thingy
+                self.turnend()
             })
 
-            socket.on("rightguess", function(sourceid: string, targetid:string, letter:string){
+            socket.on("right", function(sourceid: string, targetid:string, letter:string){
                 self.playersidsandplayersmap[targetid].rightguess(letter)
                 console.log("righte guess 2!!! " + sourceid, targetid, letter)
+                self.turnend()
             })
 
-            
+            socket.on("myturn",function(){
+                self.turnstart()
+            })
     
             socket.emit("playerword", self.word);
             
@@ -90,14 +96,9 @@ export class MainScene extends Phaser.Scene {
 
         // this checks what a person is hovering over and then checks the validity of their guess
         this.input.keyboard.on('keyup', keyevent => { 
+            
             if (this.chosenplayer !== null) {          // chosenplayer is -1 unless hovering 
-
                 socket.emit("guess", keyevent.key, this.chosenplayer);
-
-                // if (! player.guessletter(keyevent.key)){
-                //     this.myplayer.takedamage(); // takedamage() somehow knows its player 0 and does the right thing, somehow
-                    
-                // }
 
             }
         });
@@ -109,8 +110,14 @@ export class MainScene extends Phaser.Scene {
         }
         this.chosenplayer = index; 
         this.playersidsandplayersmap[this.chosenplayer].changeselectstate(true)
-
-
+    }
+    turnstart(){
+        console.log("myturn!!!")
+        this.cameras.main.setBackgroundColor('#fffdeb');
+    }
+    turnend(){
+        this.cameras.main.setBackgroundColor('#eeeeee')
     }
 }
+
 
