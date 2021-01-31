@@ -102,5 +102,8 @@ export class Player {
         this.hangmanpicture.setTexture("" + this.damage); // SOMEHOW only adds to player 0??
     }
 
-    
+    disable() {
+        this.wordsprite.disableInteractive()
+        this.wordsprite.setColor('gray');
+    }
 }

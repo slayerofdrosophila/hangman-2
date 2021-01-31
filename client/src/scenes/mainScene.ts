@@ -7,7 +7,7 @@ export class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: "MainScene" });
         this.chosenplayer = null;
-        this.playersidsandplayersmap = new Map();
+        this.playersidsandplayersmap = [];
     }
 
     preload() {
@@ -35,7 +35,7 @@ export class MainScene extends Phaser.Scene {
 
 
 
-    playersidsandplayersmap: Map<string, Player>;
+    playersidsandplayersmap: Player[];
     
     chosenplayer: string; // int of which player is being moused over
 
@@ -86,6 +86,12 @@ export class MainScene extends Phaser.Scene {
 
             socket.on("myturn",function(){
                 self.turnstart()
+            })
+
+            socket.on('death', function(socketid){
+                // find socket id of dead sprite
+                // tell it to die (be grey and uninteractive)
+                self.playersidsandplayersmap[socketid].disable()
             })
     
             socket.emit("playerword", self.word);

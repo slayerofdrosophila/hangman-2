@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { isLetter } from "./client/src/player";
+import { isLetter, Player } from "./client/src/player";
 
 const express = require('express');
 const server = express();
@@ -35,14 +35,23 @@ const io = require('socket.io')(http);
 
 
 
-let players:{ [socketid: string]: [Socket,string[],integer] } = {}; // string = socket id, Socket = actual connection, string = word 
+let players: Client[] = []; // string = socket i | Socket = actual connection, string = word , int = p[layer number]
 let playercount: integer;
 let currentturn: integer = 1;
+
+class Client {
+    connection: Socket
+    word: string[] = []
+    playernumber: integer = -1
+    constructor (connection: Socket){
+        this.connection = connection
+    }
+}
 
 io.on('connection', function (connectingsocket:Socket) {
     console.log('A user connected: ' + connectingsocket.id);
 
-    players[connectingsocket.id] = [connectingsocket,[],-1]; // when ppl connect it gives them a spot in the map, a socket, and empty string and -1 index
+    players[connectingsocket.id] = new Client(connectingsocket); // when ppl connect it gives them a spot in the map, a socket, and empty string and -1 index
 
     connectingsocket.on ("playerword",(word) => { // receives word (list) from client 
 
@@ -56,16 +65,17 @@ io.on('connection', function (connectingsocket:Socket) {
             console.log("players: "+ playercount);
         }
 
-        players[connectingsocket.id] = [connectingsocket,word, playercount]; // thois isnt overwriting the sockerid, socketid is the index and it overwewrieteds the word value at that index 
+        players[connectingsocket.id].word = word;
+        players[connectingsocket.id].playercount = playercount;
 
         for (let socketid in players) {
-            let connection = players[socketid][0];
-            let playernumber = players[connectingsocket.id][2];
+            let connection = players[socketid].connection;
+            let playernumber = players[connectingsocket.id].playernumber;
             connection.emit('newplayerword', word, connectingsocket.id,playernumber); // emites the new word (and socket id) to the current client connection imn the loop
             console.log('newplayerword'+word+connectingsocket.id+socketid, " ", playernumber); 
 
             if (socketid !== connectingsocket.id){
-                connectingsocket.emit('newplayerword',players[socketid][1],socketid,playernumber); // this sends the new connector the woirdb the lloop si currently on (not its own word)
+                connectingsocket.emit('newplayerword',players[socketid].word,socketid,playernumber); // this sends the new connector the woirdb the lloop si currently on (not its own word)
                 console.log("newplayerword-SPECIAL-"+word+connectingsocket.id+socketid, " ", playernumber);
             }
         };
@@ -79,7 +89,7 @@ io.on('connection', function (connectingsocket:Socket) {
 
     connectingsocket.on('guess', function (letter: string, targetid: string) {
 
-        let sourcenumber = players[connectingsocket.id][2];
+        let sourcenumber = players[connectingsocket.id].playernumber;
         if (sourcenumber !== currentturn){
             console.log("DENIED it is player " + currentturn + " 's turn!!")
             return;
@@ -90,7 +100,13 @@ io.on('connection', function (connectingsocket:Socket) {
             return; // rejects all non-letter guesses
         }
 
-        let word = players[targetid][1] // word is a list
+        if (players[targetid] == null){
+            console.log("guessed at null")
+            return
+        }
+
+
+        let word = players[targetid].word // word is a list
 
         let hitcounter = 0;
         for (let position in word) {
@@ -106,46 +122,46 @@ io.on('connection', function (connectingsocket:Socket) {
         }
         else{
             for (let socketid in players) {
-                let connection = players[socketid][0];
+                let connection = players[socketid].connection;
                 connection.emit('right', connectingsocket.id, targetid, letter); 
                 console.log("rite guess" + targetid);
         }
     }
 
     currentturn = iterateturn(currentturn)
-    console.log(currentturn + " iterated to")
-    for (var index in players){
-        if (players[index][2] === currentturn){ // players is a global variable hahaha
-            players[index][0].emit('myturn') 
-            break
-        }
-    }
-
+    turnemit()
     });
 
 
 
     connectingsocket.on('disconnect', function () {
         console.log('A user disconnected: ' + connectingsocket.id);
+
+        let deadnumber = players[connectingsocket.id].playernumber
         delete players[connectingsocket.id];
         playercount -= 1
 
-        let deadnumber = players[this.connectingsocket][2]
-
         // decrement all numbers > deadnumber
         for (let index in players){
-            if (deadnumber < players[index][2]){
-                players[index][2] -= 1
+            if (deadnumber < players[index].playernumber){
+                players[index].playernumber -= 1
             }
         }
-
-        if (deadnumber > playercount){
-            iterateturn(currentturn)
+        
+        // case 1 currentturn > deadnumber
+        if (currentturn > deadnumber){
+            currentturn -= 1
+        }
+        else if (currentturn === deadnumber){ // case 2 doesnt need to be handled
+            if (deadnumber > playercount){
+                currentturn = 1
+            }
+            turnemit()
         }
         
         for (let socketid in players) {
-            let connection = players[socketid][0];
-            connection.emit('death', players[this.connectingsocket][2]); 
+            let connection = players[socketid].connection;
+            connection.emit('death', connectingsocket.id); 
             console.log("death");
     }
     });
@@ -154,9 +170,19 @@ io.on('connection', function (connectingsocket:Socket) {
 
 function iterateturn(x: integer){
     x += 1;
-    console.log("current turn: " + x);
     if (x > playercount){
         x = 1
     }
+    console.log(currentturn + " iterated to")
     return x;
+}
+
+function turnemit(){
+    for (var index in players){
+        if (players[index].playernumber === currentturn){ // players is a global variable hahaha
+            players[index].connection.emit('myturn') 
+            break
+        }
+    }
+
 }
