@@ -117,7 +117,6 @@ io.on('connection', function (connectingsocket:Socket) {
     for (var index in players){
         if (players[index][2] === currentturn){ // players is a global variable hahaha
             players[index][0].emit('myturn') 
-            console.log(players[index][2] + " had myturn emitted .. probably")
             break
         }
     }
@@ -130,7 +129,27 @@ io.on('connection', function (connectingsocket:Socket) {
         console.log('A user disconnected: ' + connectingsocket.id);
         delete players[connectingsocket.id];
         playercount -= 1
+
+        let deadnumber = players[this.connectingsocket][2]
+
+        // decrement all numbers > deadnumber
+        for (let index in players){
+            if (deadnumber < players[index][2]){
+                players[index][2] -= 1
+            }
+        }
+
+        if (deadnumber > playercount){
+            iterateturn(currentturn)
+        }
+        
+        for (let socketid in players) {
+            let connection = players[socketid][0];
+            connection.emit('death', players[this.connectingsocket][2]); 
+            console.log("death");
+    }
     });
+
 });
 
 function iterateturn(x: integer){

@@ -64,8 +64,6 @@ export class MainScene extends Phaser.Scene {
                 if (newplayerid === socket.id){
                     console.log("its a me")
                     isme = true;
-                    this.mynumber = playernumber;
-                    console.log(this.mynumber);
                 }
                 console.log(isme)
                 let player = new Player(self, 50, ypos, newplayerid, word, isme);    // this calls constructor() in Player class in player.ts
